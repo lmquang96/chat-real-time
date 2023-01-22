@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Chat Room</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+	<div class="wrapper">
+		<!-- <div id="register-form">
+			<h1>Register</h1>
+			<input type="text" id="register-name">
+			<div class="avatar-group">
+				<div class="avatar-item">
+					<div class="avatar-box">
+						<img class="avatar-img" src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_1.jpg" alt="">
+					</div>
+					<input type="radio" class="avar" name="avatar-chbox">
+				</div>
+				<div class="avatar-item">
+					<div class="avatar-box">
+						<img class="avatar-img" src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_2.jpeg" alt="">
+					</div>
+					<input type="radio" class="avar" name="avatar-chbox">
+				</div>
+				<div class="avatar-item">
+					<div class="avatar-box">
+						<img class="avatar-img" src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_3.jpg" alt="">
+					</div>
+					<input type="radio" class="avar" name="avatar-chbox">
+				</div>
+				<div class="avatar-item">
+					<div class="avatar-box">
+						<img class="avatar-img" src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_4.jpeg" alt="">
+					</div>
+					<input type="radio" class="avar" name="avatar-chbox">
+				</div>
+				<div class="avatar-item">
+					<div class="avatar-box">
+						<img class="avatar-img" src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_5.jpg" alt="">
+					</div>
+					<input type="radio" class="avar" name="avatar-chbox">
+				</div>
+				<div class="avatar-item">
+					<div class="avatar-box">
+						<img class="avatar-img" src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_6.jpg" alt="">
+					</div>
+					<input type="radio" class="avar" name="avatar-chbox">
+				</div>
+				<div class="avatar-item">
+					<div class="avatar-box">
+						<img class="avatar-img" src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_7.jpg" alt="">
+					</div>
+					<input type="radio" class="avar" name="avatar-chbox">
+				</div>
+			</div>
+			<button id="register-btn">Register</button>
+		</div> -->
+		<div class="content">
+
+			<div class="sidebar">
+				<div style="padding: 15px 25px 0px 15px; display: flex;">
+					<div style="width: 50%">Xin chào <span id="hello-user-name"></span>
+						<!-- this is user name --></span></div>
+					<div style="width: 50%"><button class="btn btn-logout">Đăng Xuất</button></div>
+				</div>
+
+				<div class="search-form-container">
+					<form class="search-form" action="" method="">
+						<span class="magnifier">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+								<path
+									d="M228 68.7c-68.5 0-124 55.5-124 124 0 68.5 55.5 124 124 124 68.5 0 124-55.5 124-124C352 124.2 296.5 68.7 228 68.7zM228 283.3c-50 0-90.6-40.6-90.6-90.6 0-50 40.6-90.6 90.6-90.6s90.6 40.6 90.6 90.6C318.6 242.7 278 283.3 228 283.3z"
+									class="a" />
+								<path
+									d="M392.8 414.3c6.1 9.2 4.1 21.3-4.4 26.9 -8.5 5.7-20.5 2.8-26.6-6.4l-88.6-133.2c-6.1-9.2-4.1-21.3 4.4-26.9 8.5-5.7 20.5-2.8 26.6 6.4L392.8 414.3z"
+									class="a" /></svg>
+						</span>
+
+						<label for="search">Search</label>
+						<input id="search" name="search" type="text" placeholder="Tìm kiếm" />
+					</form><!-- /.search-form -->
+				</div><!-- /.search-form-container -->
+
+				<div class="contacts">
+
+					<nav class="contacts-nav">
+						<ul>
+							<li><a href="#" onclick="showAllMembers()">Toàn bộ</a></li>
+							<li class="active"><a href="#" onclick="showListFriends()">Bạn bè</a></li>
+							<li>
+								<a href="#" onclick="showListGroups()">Nhóm<svg xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 32 32">
+										<path
+											d="M24.3 11.3L16 19.6l-8.3-8.3c-0.4-0.4-1-0.4-1.4 0 -0.4 0.4-0.4 1 0 1.4l9 9 0 0 0 0c0.4 0.4 1 0.4 1.4 0l9-9c0.4-0.4 0.4-1 0-1.4C25.3 10.9 24.7 10.9 24.3 11.3z"
+											fill="#121313" /></svg>
+								</a>
+							</li>
+							<!--<li>All<img class="arrow-down" src="images/arrow-down.svg" alt="arrow-down"></li>-->
+						</ul>
+					</nav><!-- /.contacts-nav -->
+
+					<ul class="contact-list">
+
+						<% listUser.forEach(function(user) { %>
+						<li class="person chat-user-target">
+							<span class="avatar">
+								<img src="<%= user.avatar %>" alt="<%= user.username %>" />
+								<span class="status offline"></span>
+							</span>
+							<span class="info">
+								<span class="name"><%= user.username %></span>
+								<span class="status-msg">Super deep status message blah blah</span>
+								<span class="last-login">2 giờ trước</span>
+								<!-- <span class="unread-messages">11</span> -->
+							</span>
+						</li>
+						<% }) %>
+
+						<!-- <li class="person">
+							<span class="avatar">
+								<img src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_1.jpg"
+									alt="Sacha Griffin" />
+								<span class="status online"></span>
+							</span>
+							<span class="info">
+								<span class="name">Sacha Griffin</span>
+								<span class="status-msg">Super deep status message blah blah</span>
+								<span class="unread-messages">11</span>
+							</span>
+						</li>
+
+						<li class="person active">
+							<span class="avatar">
+								<img src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_2.jpeg"
+									alt="Debby Jones" />
+								<span class="status online"></span>
+							</span>
+							<span class="info">
+								<span class="name">Debby Jones</span>
+								<span class="status-msg">New day, fresh start, fresh eadaf</span>
+								<span class="last-login">Just now</span>
+							</span>
+						</li>
+
+						<li class="person">
+							<span class="avatar">
+								<img src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_3.jpg"
+									alt="Sacha Griffin" />
+								<span class="status away"></span>
+							</span>
+							<span class="info">
+								<span class="name">Sarah White</span>
+								<span class="status-msg">Life becomes more peaceful when</span>
+								<span class="last-login">2 min</span>
+							</span>
+						</li> -->
+
+						<!-- 3rd -->
+
+						<!-- <li class="person">
+							<span class="avatar">
+								<img src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_4.jpeg"
+									alt="Johhny	 McGrump" />
+								<span class="status busy"></span>
+							</span>
+							<span class="info">
+								<span class="name">Johhny McGrump</span>
+								<span class="status-msg">Please do not disturb</span>
+								<span class="last-login">10 min</span>
+							</span>
+						</li>
+
+						<li class="person">
+							<span class="avatar">
+								<img src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_5.jpg"
+									alt="Tommy Tom" /><span class="status"></span>
+							</span>
+							<span class="info">
+								<span class="name">Tommy Tom</span>
+								<span class="status-msg">On vacation for two weeks</span>
+								<span class="last-login">Tuesday</span>
+							</span>
+						</li>
+
+						<li class="person">
+							<span class="avatar">
+								<img src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_6.jpg"
+									alt="James King" /><span class="status"></span>
+							</span>
+							<span class="info">
+								<span class="name">James King</span>
+								<span class="status-msg">Super deep status message afad</span>
+								<span class="last-login">Friday</span>
+							</span>
+						</li>
+
+						<li class="person">
+							<span class="avatar">
+								<img src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_7.jpg"
+									alt="Natsumi Miyu" /><span class="status online"></span>
+							</span>
+							<span class="info">
+								<span class="name">Natsumi Miyu</span>
+								<span class="status-msg">Super deep status message afad</span>
+								<span class="last-login">Wednesday</span>
+							</span>
+						</li> -->
+
+					</ul><!-- /.contact-list -->
+
+				</div><!-- /.contacts -->
+
+			</div><!-- /.sidebar -->
+
+			<div class="chatbox">
+
+				<div class="person">
+					<span class="avatar" id="user-avatar-chat">
+						<img src="http://vzkiss.com/demo/chatbox/images/avatar/avatar_2.jpeg" alt="Debby Jones" />
+						<span class="status busy"></span>
+					</span>
+					<span class="info" id="user-info-chat">
+						<span class="name">Debby Jones</span>
+						<span class="login-status">Online | 11:33 PM, Las Vegas, Nevada</span>
+						<button class="call-btn" type="button">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+								<path
+									d="M415.9 335.5c-14.6-15-56.1-43.1-83.3-43.1 -6.3 0-11.8 1.4-16.3 4.3 -13.3 8.5-23.9 15.1-29 15.1 -2.8 0-5.8-2.5-12.4-8.2l-1.1-1c-18.3-15.9-22.2-20-29.3-27.4l-1.8-1.9c-1.3-1.3-2.4-2.5-3.5-3.6 -6.2-6.4-10.7-11-26.6-29l-0.7-0.8c-7.6-8.6-12.6-14.2-12.9-18.3 -0.3-4 3.2-10.5 12.1-22.6 10.8-14.6 11.2-32.6 1.3-53.5 -7.9-16.5-20.8-32.3-32.2-46.2l-1-1.2c-9.8-12-21.2-18-33.9-18 -14.1 0-25.8 7.6-32 11.6 -0.5 0.3-1 0.7-1.5 1 -13.9 8.8-24 20.9-27.8 33.2 -5.7 18.5-9.5 42.5 17.8 92.4 23.6 43.2 45 72.2 79 107.1 32 32.8 46.2 43.4 78 66.4 35.4 25.6 69.4 40.3 93.2 40.3 22.1 0 39.5 0 64.3-29.9C442.3 370.8 431.5 351.6 415.9 335.5zM404.4 391.4c-20 24.2-31.5 24.2-52.3 24.2 -20.3 0-51.8-14-84.2-37.3 -31-22.4-44.8-32.7-75.9-64.6 -32.9-33.7-53.6-61.8-76.4-103.5 -24.1-44.1-21.4-63.4-16.5-79.3 2.6-8.5 10.4-17.6 21-24.2 0.5-0.3 1-0.7 1.6-1 5.3-3.4 14.1-9.1 23.7-9.1 8 0 15.1 4 21.9 12.3l1 1.2c25.5 31.2 45.4 58.8 30.4 79.2 -10.6 14.3-16.2 24-15.3 34 0.8 9.7 7.3 17 17.1 28l0.7 0.8c16.1 18.2 20.7 23 27.1 29.5 1.1 1.1 2.2 2.3 3.5 3.6l1.8 1.9c7.4 7.7 11.5 11.9 30.3 28.4l1.1 1c8 7 13.9 12.1 22.5 12.1 8.9 0 18.7-5.6 37.3-17.5 1.9-1.2 4.6-1.9 8-1.9 21.7 0 59.1 24.8 72.2 38.3C417 359.7 423 368.9 404.4 391.4z" />
+							</svg>
+						</button>
+					</span>
+				</div><!-- /.person -->
+
+				<div class="chatbox-messages">
+					<!-- /.messages -->
+
+				</div><!-- /.chatbox-messages -->
+
+
+				<div class="message-form-container">
+
+					<div class="message-form">
+						<textarea id="message" placeholder="Hãy chat gì đó..."></textarea>
+						<button class="send-btn">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30.2 30.1">
+								<path class="st0"
+									d="M2.1 14.6C8.9 12 28.5 4 28.5 4l-3.9 22.6c-0.2 1.1-1.5 1.5-2.3 0.8l-6.1-5.1 -4.3 4 0.7-6.7 13-12.3 -16 10 1 5.7 -3.3-5.3 -5-1.6C1.5 15.8 1.4 14.8 2.1 14.6z" />
+							</svg>
+						</button>
+					</div><!-- /.search-form -->
+
+
+				</div><!-- /.message-form-container -->
+
+			</div><!-- /.chatbox -->
+
+		</div><!-- /.content -->
+
+	</div><!-- /.wrapper -->
+
+	<div class="alert">
+		<!-- alert content -->
+	</div>
+
+</body>
+<script>
+	var socket = io("http://localhost:3000");
+
+	function loadXMLDoc() {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function () {
+			if (this.readyState == 4 && this.status == 200) {
+				var str = '[' + atob(this.responseText) + ']';
+				var json = JSON.parse(str);
+				for (k in json) {
+					for (var m = 0; m < $(".contact-list .person .info .name").length; m++) {
+						if ($(".contact-list .person .info .name").eq(m).html() == json[k].ac_name) {
+							$(".contact-list .person .avatar .status").eq(m).removeClass("offline").addClass("online");
+						}
+					}
+				}
+			}
+		};
+		xhttp.open("GET", "_log_auth.txt", true);
+		xhttp.send();
+	}
+
+	$(document).ready(function () {
+		//show register form
+		$("#register-form").hide();
+		//hidden chat box content
+		$(".content").show();
+		//clear chat box
+		$(".chatbox-messages").html("");
+		var auth = JSON.parse(("<%= auth %>").replace(/&#34;/g, '"'));
+		socket.emit("user-login", auth.login_name);
+	});
+
+	//when user register success
+	socket.on("success-login", function () {
+		//hidden reister form
+		$("#register-form").hide();
+		//show chat box content
+		$(".content").show();
+		//set user avatar
+		$("#user-avatar-chat img").attr("src", "img/none-user.png");
+		//set user name
+		$("#user-info-chat .name").html("Bạn hãy chọn ai đó (hoặc nhóm nào đó) để chát nào!");
+		//set user join chat box status
+		var date = new Date();
+		var status = "Online | Đăng nhập vào lúc " + date.getHours() + ":" + date.getMinutes();
+		$("#user-info-chat .login-status").html(status);
+
+		date.setTime(date.getTime() + (1000 * 60 * 10));
+		var expires = ";expires=" + date.toUTCString();
+		var auth = JSON.parse(("<%= auth %>").replace(/&#34;/g, '"'));
+		document.cookie = "_c_auth=" + JSON.stringify(auth) + expires + ";path=/";
+		$("#hello-user-name").html(auth.login_name);
+	});
+
+	function getWeekOfDay() {
+		var d = new Date();
+		var weekday = new Array(7);
+		weekday[0] = "Chủ Nhật";
+		weekday[1] = "Thứ Hai";
+		weekday[2] = "Thứ Ba";
+		weekday[3] = "Thứ Tư";
+		weekday[4] = "Thứ Năm";
+		weekday[5] = "Thứ Sáu";
+		weekday[6] = "Thứ Bảy";
+
+		return weekday[d.getDay()];
+	}
+
+	//get lastest user join in chat box
+	socket.on("new-user-join", function (data) {
+		showAlertNoitice(data + " vừa tham gia!");
+		loadXMLDoc();
+	});
+
+	function getCookie(cname) {
+	  let name = cname + "=";
+	  let decodedCookie = decodeURIComponent(document.cookie);
+	  let ca = decodedCookie.split(';');
+	  for(let i = 0; i <ca.length; i++) {
+	    let c = ca[i];
+	    while (c.charAt(0) == ' ') {
+	      c = c.substring(1);
+	    }
+	    if (c.indexOf(name) == 0) {
+	      return c.substring(name.length, c.length);
+	    }
+	  }
+	  return "";
+	}
+
+	//send request user send chat message
+	$(".send-btn").click(function () {
+		var message = $("#message").val();
+		if(message.length > 0) {
+			auth_cookie = getCookie('_c_auth');
+			auth_json = JSON.parse(auth_cookie);
+			var user = auth_json.login_name;
+			var avatar = auth_json.login_avatar;
+			if(avatar != "img/none-user.png") {
+				socket.emit("user-send-message", { message: message, user: user, avatar: avatar });
+			} else {
+				alert("Bạn hãy chọn ai đó trước khi gửi tin nhắn!");
+			}
+		} else {
+			alert("Bạn không thể gửi nội dung trống!");
+		}
+	});
+
+	//show user chat message to chat box
+	socket.on("server-send-message", function (data) {
+		var time = new Date();
+		time = time.toLocaleString();
+		auth_cookie = getCookie('_c_auth');
+		auth_json = JSON.parse(auth_cookie);
+		console.log(auth_json.login_name + " - " + data.name);
+		if(auth_json.login_name == data.name) {
+			var row = `<div class="messages clear">
+						<span class="avatar" style="float: right;">
+							<img src="` + data.avar + `" alt="` + data.name + `" />
+						</span>
+						<div class="sender">
+							<div class="message-container" style="transform: scaleX(-1);">
+								<div class="message">
+									<p style="transform: scaleX(-1);">` + data.mess + `</p>
+								</div>
+								<span class="delivered"></span>
+							</div><!-- /.message-container -->
+						</div><!-- /.sender -->`;
+		} else {
+			var row = `<div class="messages clear">
+						<span class="avatar">
+							<img src="` + data.avar + `" alt="` + data.name + `" />
+						</span>
+						<div class="sender">
+							<div class="message-container">
+								<div class="message">
+									<p>` + data.mess + `</p>
+								</div>
+								<span class="delivered"></span>
+							</div><!-- /.message-container -->
+						</div><!-- /.sender -->`;
+		}
+		$(".chatbox-messages").append(row);
+		//clear chat message input
+		$("#message").val("");
+		//set scrollbar to bottom of chat box
+		$(".chatbox-messages").animate({
+			scrollTop: $(".chatbox-messages").get(0).scrollHeight
+		}, 500);
+	});
+
+	// $(".chat-user-target").on("click", function(){
+	// 	socket.emit("user-to-user-chat-request", $(this).children(".info").children(".name").html());
+	// });
+
+	//select user want to chat
+	$(document).on("click", ".chat-user-target", function () {
+		if ($(this).children(".avatar").children(".status").hasClass("online")) {
+			var userTarget = $(this).children(".info").children(".name").html();
+			var myself = $("#hello-user-name").html();
+			var avatarTarget = $(this).children(".avatar").children("img").attr("src");
+			socket.emit("user-to-user-chat-request", { userTarget: userTarget, myself: myself, avatarTarget: avatarTarget });
+			for (var m = 0; m < $(".chat-user-target").length; m++) {
+				$(".chat-user-target").eq(m).removeClass("active");
+			}
+			$(this).addClass("active");
+		} else {
+			alert("Đối phương đang offline, hệ thống không thể kết nối!")
+		}
+	});
+
+	//display user target on top of chatbox
+	socket.on("server-send-user-target", function (data) {
+		$(".chatbox .person .avatar img").attr("src", data.avatar);
+		$(".chatbox .person .info .name").html(data.name);
+		$(".chatbox .person .avatar .status").removeClass("busy");
+		$(".chatbox .person .avatar .status").addClass("online")
+	});
+
+	//when room have 2 member
+	socket.on("user-target-busy", function () {
+		alert("Đối phương đang bận chat với ai đó, xin vui lòng liên hệ sau!");
+	});
+
+	//display a user who want to chat with you
+	socket.on("someone-send-you-message", function (data) {
+		$(".chatbox .person .avatar img").attr("src", data.someoneAvatar);
+		$(".chatbox .person .avatar .status").removeClass("busy");
+		$(".chatbox .person .avatar .status").addClass("online")
+		$(".chatbox .person .info .name").html(data.someoneName);
+	});
+
+	//a user who send a request want to invite you to his(her) room
+	socket.on("someone-make-room-ready", function (data) {
+		socket.emit("ready-to-join-someone-room", data);
+	});
+
+	function showAlertNoitice(msg) {
+		$(".alert").html(msg);
+		$(".alert").animate({
+			opacity: 1
+		}, 1000, function () {
+			$(".alert").delay(2000).animate({
+				opacity: 0
+			}, 1000);
+		})
+	}
+
+	function showListGroups() {
+		alert("Chức năng này đang được cập nhật!");
+	}
+
+	function showListFriends() {
+		alert("Chức năng này đang được cập nhật!");
+	}
+
+	function showAllMembers() {
+		alert("Chức năng này đang được cập nhật!");
+	}
+
+	$(".call-btn").click(function () {
+		alert("Chức năng này đang được cập nhật!");
+	});
+
+	$(".btn-logout").click(function () {
+		var myself = $("#hello-user-name").html();
+		socket.emit("someone-offline-now", myself);
+		window.location.href = "/account/logout";
+	});
+
+	socket.on("server-send-someone-offline", function(data){
+		for(var k = 0; k < $(".chat-user-target").length; k++) {
+			var name = $(".chat-user-target").eq(k).children(".info").children(".name").html();
+			if(name == data) {
+				$(".chat-user-target").eq(k).children(".avatar").children(".status").removeClass("online").addClass("offline");
+			}
+		}
+	});
+</script>
+
+</html>
